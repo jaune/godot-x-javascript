@@ -241,6 +241,16 @@ static String get_type_name(const String &p_type) {
 		return "object";
 	if (p_type == "Variant")
 		return "any";
+	if (p_type.ends_with("[]")) {
+		// TODO: Inprove typed array
+		return "any[]";
+	}
+	if (p_type == "void*") {
+		return "unknown";
+	}
+	if (p_type == "const void*") {
+		return "unknown";
+	}
 	return p_type;
 }
 
@@ -272,7 +282,15 @@ String _export_method(const DocData::MethodDoc &p_method, bool is_function = fal
 					default_value += "new " + arg.type + "()";
 				}
 			} else {
-				default_value += arg.default_value;
+				if (arg.default_value.begins_with("&\"")) {
+					default_value += "'";
+					default_value += arg.default_value.substr(2, arg.default_value.size() - 3);
+					default_value += "'";
+				}
+				else {
+					default_value += arg.default_value;
+				}
+
 			}
 		}
 
